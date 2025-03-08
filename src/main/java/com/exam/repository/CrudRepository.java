@@ -1,10 +1,9 @@
-package com.td.demo.repository;
+package com.exam.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
 import java.util.Optional;
-
 
 
 @NoRepositoryBean
