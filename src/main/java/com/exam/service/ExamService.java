@@ -1,6 +1,7 @@
 package com.exam.service;
 
 import com.exam.model.Exam;
+import com.exam.model.Question;
 import com.exam.repository.ExamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class ExamService {
 
     public void deleteExamById(Long id) {
         examRepository.deleteById(id);
+    }
+    
+    public Exam getExamById(Long examId) {
+        return examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found with id " + examId));
     }
 }

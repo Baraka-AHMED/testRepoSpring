@@ -22,8 +22,8 @@ public class Exam {
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
-
-    @OneToMany(mappedBy = "exam")
+    
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 
     public Long getId() {

@@ -1,4 +1,6 @@
 package com.exam.model;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -32,6 +34,9 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "exam_id", nullable = false)
     private Exam exam;
+    
+    @ManyToMany(mappedBy = "questions")
+    private List<Quiz> quizzes;
 
     public Long getId() {
         return id;

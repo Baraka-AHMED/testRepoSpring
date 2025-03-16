@@ -58,6 +58,23 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Dépendance pour encoder les mots de passe -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-security</artifactId>
+	    </dependency>
+	    <!-- Thymeleaf  -->
+	    <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<!-- Hibernate Validator (implémentation de Bean Validation) -->
+	    <dependency>
+	        <groupId>org.hibernate.validator</groupId>
+	        <artifactId>hibernate-validator</artifactId>
+	        <!-- Assure-toi de vérifier la version compatible -->
+	    </dependency>
+
 	</dependencies>
 
 	<build>

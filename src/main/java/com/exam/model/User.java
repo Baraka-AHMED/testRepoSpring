@@ -1,11 +1,21 @@
 package com.exam.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
 @Table(name = "users")
+@Getter @Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -49,84 +59,27 @@ public class User {
     )
     @JsonIgnore
     private List<Exam> exams;
-
-    public Long getUserId() {
-        return userId;
+    
+    // Constructeur avec 'active' par défaut à true
+    public User() {
+        this.active = true; 
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role));
+    };
+    
+    public void printStudentInfo() {
+        System.out.println("=== Informations de l'étudiant ===");
+        System.out.println("ID: " + userId);
+        System.out.println("Nom: " + firstName + " " + lastName);
+        System.out.println("Username: " + username);
+        System.out.println("Email: " + email);
+        System.out.println("Role: " + role);
+        System.out.println("Actif: " + (active ? "Oui" : "Non"));
+        System.out.println("Nombre de cours inscrits: " + (courses != null ? courses.size() : 0));
+        System.out.println("Nombre d'examens inscrits: " + (exams != null ? exams.size() : 0));
+        System.out.println("==================================");
     }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public List<Exam> getExams() {
-        return exams;
-    }
-
-    public void setExams(List<Exam> exams) {
-        this.exams = exams;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    
 }
