@@ -1,6 +1,7 @@
 package com.exam.model;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,6 +13,7 @@ public class Quiz {
 
     @Column(nullable = false, unique = true)
     private String title;
+    
 
     @ManyToMany
     @JoinTable(
@@ -19,8 +21,9 @@ public class Quiz {
             joinColumns = @JoinColumn(name = "quiz_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id")
     )
-    private List<Question> questions;
+    private List<Question> questions = new ArrayList<>();
 
+    
     public Long getId() {
         return id;
     }
@@ -35,6 +38,10 @@ public class Quiz {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+    
+    public void addQuestion(Question question) {
+        this.questions.add(question);
     }
 
     public String getTitle() {

@@ -25,4 +25,10 @@ public class QuestionService {
     public void deleteQuestionById(Long id) {
         questionRepository.deleteById(id);
     }
+
+    public Question getQuestionById(Long questionId) {
+        return questionRepository.findById(questionId)
+                .orElseThrow(() -> new RuntimeException("Question not found with id " + questionId));
+    }
+
 }

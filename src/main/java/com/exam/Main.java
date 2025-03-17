@@ -32,6 +32,7 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+    	/*
         try {
             // Création d'un professeur
             User teacher = new User();
@@ -101,5 +102,6 @@ public class Main implements CommandLineRunner {
             System.err.println("Erreur lors de l'exécution de l'application: " + e.getMessage());
             e.printStackTrace();
         }
+        */
     }
 }
