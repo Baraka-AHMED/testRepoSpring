@@ -40,7 +40,7 @@ public class Main implements CommandLineRunner {
             teacher.setLastName("Doe");
             teacher.setEmail("john.doe@example.com");
             teacher.setPassword("securePass");
-            teacher.setRole("TEACHER");
+            teacher.setRole(UserRole.TEACHER);
             teacher.setUsername("johndoe");
             userService.addUser(teacher);
 
@@ -63,7 +63,7 @@ public class Main implements CommandLineRunner {
             student.setLastName("Smith");
             student.setEmail("alice.smith@example.com");
             student.setPassword("studentPass");
-            student.setRole("STUDENT");
+            student.setRole(UserRole.TEACHER);
             student.setUsername("alicesmith");
             student.setCourses(List.of(course));
             student.setExams(List.of(exam));

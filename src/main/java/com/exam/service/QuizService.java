@@ -24,4 +24,5 @@ public class QuizService {
     public void deleteQuizById(Long id) {
         quizRepository.deleteById(id);
     }
+
 }

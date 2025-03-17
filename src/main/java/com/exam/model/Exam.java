@@ -1,8 +1,8 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +23,48 @@ public class Exam {
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
 
-    @OneToMany(mappedBy = "exam")
-    private List<Question> questions;
+    @JsonIgnore
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "exam_students",
+            joinColumns = @JoinColumn(name = "exam_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<User> students = new ArrayList<>();
+
+    public Exam() {}
+
+    public Exam(String examTitle, Course course, User teacher) {
+        this.examTitle = examTitle;
+        this.course = course;
+        this.teacher = teacher;
+    }
+
+    public void addStudent(User student) {
+        if (!students.contains(student)) {
+            students.add(student);
+            student.getExams().add(this);
+        }
+    }
+
+    // Retirer
+    public void removeStudent(User student) {
+        if (students.contains(student)) {
+            students.remove(student);
+            student.getExams().remove(this);
+        }
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+        if (!course.getExams().contains(this)) {
+            course.getExams().add(this);
+        }
+    }
 
     public Long getId() {
         return id;
@@ -34,12 +74,16 @@ public class Exam {
         this.id = id;
     }
 
-    public List<Question> getQuestions() {
-        return questions;
+    public String getExamTitle() {
+        return examTitle;
     }
 
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
+    public void setExamTitle(String examTitle) {
+        this.examTitle = examTitle;
+    }
+
+    public Course getCourse() {
+        return course;
     }
 
     public User getTeacher() {
@@ -50,22 +94,19 @@ public class Exam {
         this.teacher = teacher;
     }
 
-    public Course getCourse() {
-        return course;
+    public List<Question> getQuestions() {
+        return questions;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 
-    public String getExamTitle() {
-        return examTitle;
+    public List<User> getStudents() {
+        return students;
     }
 
-    public void setExamTitle(String examTitle) {
-        this.examTitle = examTitle;
+    public void setStudents(List<User> students) {
+        this.students = students;
     }
 }
-
-
-

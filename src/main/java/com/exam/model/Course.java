@@ -1,7 +1,9 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,8 +16,29 @@ public class Course {
     @Column(nullable = false, unique = true)
     private String title;
 
-    @OneToMany(mappedBy = "course")
-    private List<Exam> exams;
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Exam> exams = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "courses")
+    private List<User> students = new ArrayList<>();
+
+
+    // Ajout d’un étudiant à la liste des étudiants du cours
+    public void addStudent(User student) {
+        if (!this.students.contains(student)) {
+            this.students.add(student);
+            student.getCourses().add(this);
+        }
+    }
+
+    // Ajout d’un examen à la liste des examens du cours
+    public void addExam(Exam exam) {
+        if (!this.exams.contains(exam)) {
+            this.exams.add(exam);
+            exam.setCourse(this);
+        }
+    }
 
     public Long getId() {
         return id;
@@ -39,5 +62,13 @@ public class Course {
 
     public void setExams(List<Exam> exams) {
         this.exams = exams;
+    }
+
+    public List<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<User> students) {
+        this.students = students;
     }
 }

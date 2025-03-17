@@ -18,17 +18,20 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false,name = "first_name")
+    @Column(nullable = false, name = "first_name")
     private String firstName;
 
-    @Column(nullable = false,name = "last_name")
+    @Column(nullable = false, name = "last_name")
     private String lastName;
 
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private UserRole role;
+
+
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -39,6 +42,7 @@ public class User {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
+    @JsonIgnore
     private List<Course> courses;
 
     @ManyToMany
@@ -49,6 +53,22 @@ public class User {
     )
     @JsonIgnore
     private List<Exam> exams;
+
+    public void enrollInCourse(Course course) {
+        if (!this.courses.contains(course)) {
+            this.courses.add(course);
+            course.getStudents().add(this);
+        }
+    }
+
+    // Inscription à un examen
+    public void enrollInExam(Exam exam) {
+        if (!this.exams.contains(exam)) {
+            this.exams.add(exam);
+            exam.getStudents().add(this);
+        }
+    }
+
 
     public Long getUserId() {
         return userId;
@@ -90,11 +110,11 @@ public class User {
         this.username = username;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
@@ -130,3 +150,4 @@ public class User {
         this.email = email;
     }
 }
+
