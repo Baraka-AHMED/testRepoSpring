@@ -5,6 +5,9 @@ import com.exam.dto.UserRegistrationDto;
 import com.exam.model.User;
 import com.exam.model.UserRole;
 import com.exam.repository.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -90,20 +93,6 @@ public class UserService {
 		} catch (Exception  e) {
 			throw new RuntimeException(e.getMessage());
 		}
-    }
-    
-    
-    public User authenticate(LoginDto loginDto) {
-
-    	User user = userRepository.findByUsernameOrEmail(loginDto.getUsernameOrEmail(), loginDto.getUsernameOrEmail())    			
-                .orElseThrow(() -> new BadCredentialsException("User not found with username or email: " + loginDto.getUsernameOrEmail())
-                		);
-    	
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
-        
-        return user;
     }
     
     

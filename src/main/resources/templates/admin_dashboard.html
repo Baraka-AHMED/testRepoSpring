@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Page</title>
+</head>
+<body>
+	
+    <h1>Admin Page</h1>
+    <h1>Welcome, <span th:text="${username}">User</span> !</h1>
+	
+	<!-- Ajout du bouton de déconnexion -->
+	<form action="#" th:action="@{/logout}" method="post">
+	    <button type="submit">Logout</button>
+	</form>
+	
+</body>
+</html>

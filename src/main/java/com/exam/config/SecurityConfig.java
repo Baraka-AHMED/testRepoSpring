@@ -20,6 +20,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     .requestMatchers("/","/register", "/login", "/h2-console/**", "/users/**").permitAll()  // Permet l'accès aux routes d'inscription et de connexion
+                    .requestMatchers("/admin/home").hasRole("ADMIN")
+                    .requestMatchers("/teacher/home").hasRole("TEACHER")
+                    .requestMatchers("/student/home").hasRole("STUDENT")
                     .anyRequest().authenticated()  // Toutes les autres pages nécessitent une authentification
             )
             /*
@@ -38,12 +41,16 @@ public class SecurityConfig {
             */
             .logout(logout -> 
                 logout
+	                .logoutUrl("/logout") // URL pour se déconnecter
+	                .logoutSuccessUrl("/login?logout") // Redirection après déconnexion
+	                .invalidateHttpSession(true) // Invalidation de la session
+	                .clearAuthentication(true) // Nettoyage de l'authentification
                     .permitAll() // Permet à tout le monde de se déconnecter
             )
             .csrf(csrf -> 
-            		csrf.ignoringRequestMatchers("/h2-console/**", "/login")
+            		csrf.ignoringRequestMatchers("/**", "/h2-console/**", "/login", "/admin/**", "/teacher/**", "/student/**")
             		)
-         // Autorisation de l'affichage de la console H2 dans un iframe, s'applique aussi pour toute l'application
+            // Autorisation de l'affichage de la console H2 dans un iframe, s'applique aussi pour toute l'application
             .headers(headers ->
                 headers.frameOptions(frameOptionsConfig 
                 		-> frameOptionsConfig.sameOrigin()
