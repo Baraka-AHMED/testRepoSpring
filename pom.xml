@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.td</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>demo</artifactId> 
 	<version>0.0.1-SNAPSHOT</version>
 	<name>td</name>
 	<description> project for Spring Boot</description>
@@ -78,6 +78,9 @@
 	</dependencies>
 
 	<build>
+	
+		
+    
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
