@@ -28,13 +28,11 @@
         <input type="password" id="password" th:field="*{password}" required><br><br>
 
         <!-- Liste déroulante des rôles -->
-        <label for="role">Role:</label>
-        <select id="role" th:field="*{role}" required>
-            <option th:each="role : ${roles}"
-                    th:value="${role}"
-                    th:text="${role}">
-            </option>
-        </select><br><br>
+        <label>Rôle :</label>
+        <select name="role" class="form-select">
+            <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" th:if="${role != 'ADMIN'}"></option>
+        </select>
+        <br><br>
 
         <button type="submit">Register</button>
 		

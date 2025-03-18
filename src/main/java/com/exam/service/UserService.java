@@ -24,7 +24,7 @@ public class UserService {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     // Mapping DTO -> Entity 
     private User mapDtoToUser(UserRegistrationDto dto) {
         User user = new User(); 
@@ -75,25 +75,62 @@ public class UserService {
     public List<User> getUsersByRole(UserRole role) {
         return userRepository.findByRole(role);
     }
-    
-    
+
+
     public void registerNewUser(UserRegistrationDto dto) {
-    	
-    	if(userRepository.existsByEmail(dto.getEmail())) {
-    		throw new RuntimeException("Email alreay used");
-    	}
-    	
-    	if(userRepository.existsByUsername(dto.getUsername())) {
-    		throw new RuntimeException("Username already used");
-    	}
-    	
-    	try {
-			User user = mapDtoToUser(dto);
-			userRepository.save(user);
-		} catch (Exception  e) {
-			throw new RuntimeException(e.getMessage());
-		}
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Email déjà utilisé !");
+        }
+
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new RuntimeException("Nom d'utilisateur déjà utilisé !");
+        }
+
+        if (dto.getRole() == UserRole.ADMIN) {
+            throw new RuntimeException("Création d'un administrateur interdite via l'inscription !");
+        }
+
+        User user = mapDtoToUser(dto);
+        userRepository.save(user);
     }
-    
-    
+
+
+    public void updateUserDetails(Long id, String firstName, String lastName, UserRole role, boolean active) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setRole(role);
+            user.setActive(active);
+            userRepository.save(user);
+        }
+    }
+
+    public void addUserFromAdmin(String username, String email, String password, String firstName, String lastName, UserRole role, boolean active) {
+        if (userRepository.existsByEmail(email) || userRepository.existsByUsername(username)) {
+            throw new RuntimeException("L'email ou le nom d'utilisateur existe déjà !");
+        }
+
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setRole(role);
+        user.setActive(active);
+
+        userRepository.save(user);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+
+
+
+
+
 }
