@@ -75,9 +75,9 @@ public class LoginController {
 			System.out.println("Login Succesful");
 			
 			String redirectURL = switch (user.getRole().name()) {
-	            case "ADMIN" -> "/admin/home";
-	            case "TEACHER" -> "/teacher/home";
-	            case "STUDENT" -> "/student/home";
+	            case "ADMIN" -> "/admin/dashboard";
+	            case "TEACHER" -> "/teacher/dashboard";
+	            case "STUDENT" -> "/student/dashboard";
 	            default -> "/";
 			};
 			

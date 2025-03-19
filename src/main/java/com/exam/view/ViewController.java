@@ -37,11 +37,11 @@ public class ViewController {
 			
 			switch (role) {
 	            case "ADMIN":
-	                return "redirect:/admin/home";
+	                return "redirect:/admin/dashboard";
 	            case "TEACHER":
-	                return "redirect:/teacher/home";
+	                return "redirect:/teacher/dashboard";
 	            case "STUDENT":
-	                return "redirect:/student/home";
+	                return "redirect:/student/dashboard";
 	            default:
 	                return "redirect:/login";
 			}

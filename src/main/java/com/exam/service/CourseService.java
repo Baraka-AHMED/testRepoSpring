@@ -34,4 +34,8 @@ public class CourseService {
     public void deleteCourseById(Long id) {
         courseRepository.deleteById(id);
     }
+
+	public List<Course> findCoursesByTeacherId(Long teacherId) {
+		return courseRepository.findCoursesByTeacherId(teacherId);
+	}
 }

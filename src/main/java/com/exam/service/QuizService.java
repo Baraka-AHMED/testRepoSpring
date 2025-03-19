@@ -17,7 +17,7 @@ public class QuizService {
         return (List<Quiz>) quizRepository.findAll();
     }
 
-    public void addQuiz(Quiz quiz) {
+    public void saveQuiz(Quiz quiz) {
         quizRepository.save(quiz);
     }
 

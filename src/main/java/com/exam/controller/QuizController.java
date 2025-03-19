@@ -27,7 +27,7 @@ public class QuizController {
 
     @PostMapping("/add")
     public void addQuiz(@RequestBody Quiz quiz) {
-        quizService.addQuiz(quiz);
+        quizService.saveQuiz(quiz);
     }
 
     @DeleteMapping("/deleteById")

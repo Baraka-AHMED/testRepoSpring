@@ -36,7 +36,7 @@ public class AdminController {
         if (authentication != null && authentication.isAuthenticated()) {
             model.addAttribute("username", authentication.getName());
         }
-        return "admin-dashboard"; // Correspond au fichier admin-dashboard.html
+        return "admin_dashboard"; // Correspond au fichier admin-dashboard.html
     }
 
 

@@ -32,7 +32,8 @@ public class Main implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) { 
+    	/*
         try {
             System.out.println("===== Initialisation des données =====");
 
@@ -102,8 +103,9 @@ public class Main implements CommandLineRunner {
         } catch (Exception e) {
             System.err.println("Erreur lors de l'exécution de l'application: " + e.getMessage());
             e.printStackTrace();
-        }
+        }*/
     }
+    
 
     // **Méthodes utilitaires pour créer les entités**
     private User createTeacher(String firstName, String lastName, String email, String password) {
@@ -165,7 +167,7 @@ public class Main implements CommandLineRunner {
     private void addQuestionsToExam(Exam exam, List<Question> questions) {
         for (Question question : questions) {
             question.setExam(exam);
-            questionService.addQuestion(question);
+            questionService.saveQuestion(question);
         }
     }
 }
