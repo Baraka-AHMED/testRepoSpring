@@ -48,7 +48,7 @@ public class SecurityConfig {
                     .permitAll() // Permet à tout le monde de se déconnecter
             )
             .csrf(csrf -> 
-            		csrf.ignoringRequestMatchers("/**", "/h2-console/**", "/login", "/admin/**", "/teacher/**", "/student/**")
+            		csrf.ignoringRequestMatchers("/**", "/h2-console/**", "/login", "/admin/**", "/teacher/**", "/student/**", "/register")
             		)
             // Autorisation de l'affichage de la console H2 dans un iframe, s'applique aussi pour toute l'application
             .headers(headers ->
