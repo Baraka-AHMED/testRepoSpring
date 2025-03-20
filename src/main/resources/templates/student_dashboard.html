@@ -1,17 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Student Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tableau de bord étudiant</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .btn-primary, .btn-danger {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .course-card {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .exam-card {
+            padding: 15px;
+            border-radius: 8px;
+            background: #f1f1f1;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-	
-    <h1>Student Page</h1>
-    <h1>Welcome, <span th:text="${username}">User</span> !</h1>
-	
-	<!-- Ajout du bouton de déconnexion -->
-	<form action="#" th:action="@{/logout}" method="post">
-	    <button type="submit">Logout</button>
-	</form>
-	
+
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Tableau de Bord Étudiant</a>
+            <div class="d-flex">
+                <a th:href="@{/student/edit-profile}" class="btn btn-outline-primary me-2">Modifier mes informations</a>
+                <a th:href="@{/student/dashboard}" class="btn btn-outline-secondary me-2">🏠 Accueil</a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-danger">🚪 Déconnexion</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Bienvenue, <span th:text="${student.firstName}">Étudiant</span> !</h1>
+
+        <!-- Section d'inscription à un nouveau cours -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Inscription à un nouveau cours</h2>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/student/enroll}" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <select class="form-select" name="courseId" required>
+                                <option value="" disabled selected>Choisir un cours</option>
+                                <option th:each="course : ${allCourses}" th:value="${course.id}" th:text="${course.title}">Nom du cours</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success w-100">S'inscrire</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Liste des cours inscrits -->
+        <h2 class="mt-4">📚 Mes Cours</h2>
+        <div th:each="course : ${enrolledCourses}" class="course-card">
+            <h3 th:text="${course.title}" class="text-primary">Nom du cours</h3>
+
+            <div class="row">
+                <div class="col-md-4" th:each="exam : ${courseExams[course.id]}">
+                    <div class="exam-card">
+                        <h5 th:text="${exam.examTitle}">Titre de l'examen</h5>
+						<p><strong>Professeur :</strong> <span th:text="${exam.teacher.lastName} + ' ' + ${exam.teacher.firstName}">Nom et Prénom du professeur</span></p>
+                        <a th:href="@{/student/exam/view/{id}(id=${exam.id})}" class="btn btn-sm btn-primary">Voir l'examen</a>
+                    </div>
+                </div>
+
+                <!-- Message si aucun examen n'est disponible -->
+                <div class="col-12" th:if="${courseExams[course.id] == null or #lists.isEmpty(courseExams[course.id])}">
+                    <p class="text-muted">Aucun examen disponible pour ce cours.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 </html>
