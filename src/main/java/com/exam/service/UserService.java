@@ -112,23 +112,6 @@ public class UserService {
         }
     }
 
-    public void addUserFromAdmin(String username, String email, String password, String firstName, String lastName, UserRole role, boolean active) {
-        if (userRepository.existsByEmail(email) || userRepository.existsByUsername(username)) {
-            throw new RuntimeException("L'email ou le nom d'utilisateur existe déjà !");
-        }
-
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setRole(role);
-        user.setActive(active);
-
-        userRepository.save(user);
-    }
-
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

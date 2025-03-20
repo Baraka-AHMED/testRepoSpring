@@ -26,7 +26,7 @@ public class AdminController {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         model.addAttribute("roles", UserRole.values()); // Envoie la liste des rôles
-        return "admin/manage-users";
+        return "manage-users";
     }
 
     @GetMapping("/dashboard")
@@ -57,21 +57,6 @@ public class AdminController {
     @GetMapping("/delete-user")
     public String deleteUser(@RequestParam Long id) {
         userService.deleteUserById(id);
-        return "redirect:/admin/manage-users";
-    }
-
-    // Ajouter un nouvel utilisateur
-    @PostMapping("/add-user")
-    public String addUser(
-            @RequestParam String username,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String firstName,
-            @RequestParam String lastName,
-            @RequestParam UserRole role,
-            @RequestParam boolean active
-    ) {
-        userService.addUserFromAdmin(username, email, password, firstName, lastName, role, active);
         return "redirect:/admin/manage-users";
     }
 
