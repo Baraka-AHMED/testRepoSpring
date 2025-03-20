@@ -1,4 +1,4 @@
-package com.exam.controller;
+package com.exam.controller.webController;
 
 import java.util.List;
 
@@ -184,5 +184,22 @@ public class TeacherController {
 
         return "teacher/manage-questions";
     }
+    
+    
+    @GetMapping("/course-students/{courseId}")
+    public String listStudentsByCourse(@PathVariable Long courseId, Model model) {
+        Course course = courseService.getCourseById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Cours non trouvé"));
+
+        List<User> students = course.getStudents(); // Récupère les étudiants inscrits
+
+        model.addAttribute("course", course);
+        model.addAttribute("students", students);
+
+        return "course_students"; // Vue qui affichera les étudiants
+    }
+
+    
+    
 
 }

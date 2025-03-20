@@ -38,7 +38,7 @@
 
         .courses {
             display: flex;
-            flex-direction: column;  /* Chaque cours sur une ligne */
+            flex-direction: column;
             gap: 20px;
         }
 
@@ -47,8 +47,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin-bottom: 20px;
-            width: 100%; /* Couvre toute la largeur disponible */
+            width: 100%;
         }
 
         .course h3 {
@@ -60,10 +59,9 @@
             color: #555;
         }
 
-        /* Affichage des examens en colonnes, maximum 3 par ligne */
         .exams {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 colonnes maximum */
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-top: 20px;
         }
@@ -103,6 +101,11 @@
             color: white;
         }
 
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
         .btn-success {
             background-color: #4CAF50;
             color: white;
@@ -133,7 +136,7 @@
     <div class="container">
         <!-- Section de navigation -->
         <div class="navigation">
-            <form th:action="@{/logout}" method="post" class="logout-form">
+            <form th:action="@{/logout}" method="post">
                 <button type="submit" class="logout-button">🚪 Se déconnecter</button>
             </form>
         </div>
@@ -161,11 +164,14 @@
         <section>
             <h2>Vos Cours</h2>
             <div class="courses">
-                <!-- Loop à travers les cours -->
+                <!-- Boucle pour afficher chaque cours -->
                 <div th:each="course : ${teacherCourses}">
                     <div class="course">
                         <h3 th:text="${course.title}">Titre du cours</h3>
                         <p th:text="|ID du cours : ${course.id}|"></p>
+
+                        <!-- Bouton pour voir les étudiants inscrits -->
+                        <a th:href="@{/teacher/course-students/{courseId}(courseId=${course.id})}" class="btn btn-info">👨‍🎓 Voir les étudiants</a>
 
                         <!-- Examens associés au cours -->
                         <div class="exams">

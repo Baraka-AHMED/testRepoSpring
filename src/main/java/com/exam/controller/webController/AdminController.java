@@ -1,4 +1,4 @@
-package com.exam.controller;
+package com.exam.controller.webController;
 
 import com.exam.model.User;
 import com.exam.model.UserRole;

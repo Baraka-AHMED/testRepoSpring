@@ -104,13 +104,6 @@
             <h3 th:text="${exam.examTitle}">Titre de l'examen</h3>
             <p>ID de l'examen : <span th:text="${exam.id}">ID de l'examen</span></p>
 
-            <!-- Actions sur l'examen -->
-            <div class="actions">
-                <a th:href="@{/teacher/edit-exam/{examId}(examId=${exam.id})}" class="modify">Modifier l'examen</a>
-				<form th:action="@{/teacher/delete-exam/{examId}(examId=${exam.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">🗑 Supprimer</button>
-                </form>
-            </div>
 
             <!-- Affichage des questions -->
             <h4>Questions :</h4>

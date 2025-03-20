@@ -1,28 +1,64 @@
 package com.exam.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	
+	@Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
+	
+	@Bean
+    @Order(1) // Ordre de priorité : les requêtes API sont traitées en premier
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/**") // S'applique uniquement aux requêtes /api/**
+            .authorizeHttpRequests((authz) -> authz
+                    .requestMatchers("/api/login").permitAll() // Autorise /api/login sans authentification
+                    .requestMatchers("/api/users/**").hasRole("ADMIN")
+                    .anyRequest().authenticated() // Autres requêtes API nécessitent une authentification
+                )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement((sessionManagement) ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .csrf(csrf -> 
+	    		csrf.ignoringRequestMatchers("/api/**")
+	    		);
+            /*
+            .csrf(csrf -> csrf.disable());
+            */
+        return http.build();
+    }
+	
+	@Order(2)
 	@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             // Autoriser l'accès aux pages publiques (inscription, connexion)
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/","/register", "/login", "/h2-console/**", "/users/**").permitAll()  // Permet l'accès aux routes d'inscription et de connexion
+                
+                	// Pour les requêtes WebApp
+                    .requestMatchers("/","/register", "/login", "/h2-console/**", "/users/**","/courses/**","/questions/**","/exams/**").permitAll()  // Permet l'accès aux routes d'inscription et de connexion
                     .requestMatchers("/admin/home").hasRole("ADMIN")
                     .requestMatchers("/teacher/home").hasRole("TEACHER")
-                    .requestMatchers("/student/home").hasRole("STUDENT")
+                    .requestMatchers("/student/home").hasRole("STUDENT")                    
+                    
                     .anyRequest().authenticated()  // Toutes les autres pages nécessitent une authentification
             )
             /*
@@ -60,6 +96,10 @@ public class SecurityConfig {
         return http.build(); // Construction du filtre de sécurité avec la configuration définie
     }
 
+	@Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 	
 	@Bean
     public PasswordEncoder passwordEncoder() {

@@ -38,4 +38,8 @@ public class CourseService {
 	public List<Course> findCoursesByTeacherId(Long teacherId) {
 		return courseRepository.findCoursesByTeacherId(teacherId);
 	}
+
+	public void enrollStudentInCourse(Long studentId, Long courseId) {
+		courseRepository.enrollStudentInCourse(studentId, courseId);
+	}
 }

@@ -13,14 +13,15 @@ import java.util.List;
 public class Main implements CommandLineRunner {
   
 
-    @Override
-    public void run(String... args) { 
-    	/*
-        try {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
     }
+
+	@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
     
          
 }

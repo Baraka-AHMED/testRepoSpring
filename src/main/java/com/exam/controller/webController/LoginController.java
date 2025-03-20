@@ -1,4 +1,4 @@
-package com.exam.controller;
+package com.exam.controller.webController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

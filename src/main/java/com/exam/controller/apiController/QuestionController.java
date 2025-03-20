@@ -1,4 +1,4 @@
-package com.exam.controller;
+package com.exam.controller.apiController;
 
 import com.exam.model.Question;
 import com.exam.model.Quiz;
