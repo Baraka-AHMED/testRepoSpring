@@ -2,8 +2,10 @@ package com.exam.service;
 
 import com.exam.dto.LoginDto;
 import com.exam.dto.UserRegistrationDto;
+import com.exam.model.Course;
 import com.exam.model.User;
 import com.exam.model.UserRole;
+import com.exam.repository.CourseRepository;
 import com.exam.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,9 @@ public class UserService {
 	
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -112,7 +117,15 @@ public class UserService {
     }
 
 
-
+    public void enrollStudentToCourse(User student, Course course) {
+    	
+    	student.getCourses().add(course);
+    	course.getStudents().add(student);
+    	
+    	userRepository.save(student);
+    	courseRepository.save(course);
+    	
+    }
 
 
 

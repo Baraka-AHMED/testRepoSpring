@@ -66,4 +66,19 @@ public class ExamService {
     public Exam getFirstExamByTeacher(String teacherName) {
         return examRepository.findFirstExamByTeacher(teacherName);
     }
+
+	public List<Exam> findExamsByCourseId(Long courseId) {
+		return examRepository.findExamsByCourseId(courseId);
+	}
+
+	public Exam findExamById(Long examId) {
+		Exam exam = examRepository.findExamById(examId)
+				.orElseThrow(()-> new RuntimeException("Exam not found."));
+		return exam;
+	}
+
+	public List<Exam> findExamsByTeacherId(Long teacherId) {
+		return examRepository.findExamsByTeacherId(teacherId);
+	}
+
 }

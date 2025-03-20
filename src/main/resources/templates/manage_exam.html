@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gérer l'examen - <span th:text="${courseTitle}"></span></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navigation {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-button, .logout-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .exam-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .exam-card h3 {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .exam-card p {
+            color: #555;
+        }
+
+        .actions a {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+
+        .actions a.modify {
+            background-color: #4CAF50;
+        }
+
+        .question-card {
+            display: inline-block;
+            width: 30%;
+            margin: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-card p {
+            margin: 10px 0;
+        }
+
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Section de navigation -->
+        <div class="navigation">
+            <a th:href="@{/teacher/dashboard}" class="dashboard-button">⬅ Retour au tableau de bord</a>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="logout-button">🚪 Se déconnecter</button>
+            </form>
+        </div>
+
+        <!-- Titre de la page -->
+        <h1>Gérer l'examen pour le cours : <span th:text="${courseTitle}">Nom du cours</span></h1>
+
+        <!-- Affichage de l'examen unique -->
+        <div class="exam-card">
+            <h3 th:text="${exam.examTitle}">Titre de l'examen</h3>
+            <p>ID de l'examen : <span th:text="${exam.id}">ID de l'examen</span></p>
+
+            <!-- Actions sur l'examen -->
+            <div class="actions">
+                <a th:href="@{/teacher/edit-exam/{examId}(examId=${exam.id})}" class="modify">Modifier l'examen</a>
+				<form th:action="@{/teacher/delete-exam/{examId}(examId=${exam.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">🗑 Supprimer</button>
+                </form>
+            </div>
+
+            <!-- Affichage des questions -->
+            <h4>Questions :</h4>
+            <div th:if="${exam.questions.isEmpty()}" class="no-questions">
+                <p>Aucune question disponible pour cet examen.</p>
+            </div>
+
+            <div th:each="question, questionIndex : ${exam.questions}" class="question-card">
+                <p><strong>Question <span th:text="${questionIndex.index + 1}"></span> :</strong> <span th:text="${question.questionTitle}">Intitulé de la question</span></p>
+                <p><strong>Catégorie :</strong> <span th:text="${question.category}">Catégorie</span></p>
+                <p><strong>Difficulté :</strong> <span th:text="${question.difficultyLevel}">Difficulté</span></p>
+                <p><strong>Options :</strong></p>
+                <ul>
+                    <li th:text="'1) ' + ${question.option1}"></li>
+                    <li th:text="'2) ' + ${question.option2}"></li>
+                    <li th:text="'3) ' + ${question.option3}"></li>
+                    <li th:text="'4) ' + ${question.option4}"></li>
+                </ul>
+                <p><strong>Réponse correcte :</strong> <span th:text="${question.rightAnswer}">Bonne réponse</span></p>
+
+                <!-- Actions sur la question -->
+                <div class="actions">
+                    <a th:href="@{/teacher/edit-question/{questionId}(questionId=${question.id})}" class="modify">Modifier la question</a>
+					<form th:action="@{/teacher/delete-question/{questionId}(questionId=${question.id})}" method="post" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette question ?');">
+					    <button type="submit" class="btn btn-danger">🗑 Supprimer la question</button>
+					</form>
+                </div>
+            </div>
+
+            <!-- Bouton pour ajouter une nouvelle question -->
+            <a th:href="@{/teacher/add-question/{examId}(examId=${exam.id})}" class="add-button">Ajouter une nouvelle question</a>
+        </div>
+    </div>
+
+</body>
+</html>

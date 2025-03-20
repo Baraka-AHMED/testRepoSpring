@@ -2,58 +2,194 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Exam Management</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-</head>
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Poppins', sans-serif;
-    }
-    .container {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        margin: 50px auto;
-        max-width: 800px;
-    }
-    .btn-primary, .btn-danger {
-        border-radius: 8px;
-        padding: 12px 25px;
-        font-size: 16px;
-    }
-    .form-control {
-        border-radius: 10px;
-        padding: 15px;
-    }
-    table {
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    h1, h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .dashboard-container {
-        max-width: 1100px;
-        margin: auto;
-    }
-</style>
-    <title>Teacher Page</title>
+    <title>Teacher Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .navigation {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .logout-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .courses {
+            display: flex;
+            flex-direction: column;  /* Chaque cours sur une ligne */
+            gap: 20px;
+        }
+
+        .course {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%; /* Couvre toute la largeur disponible */
+        }
+
+        .course h3 {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .course p {
+            color: #555;
+        }
+
+        /* Affichage des examens en colonnes, maximum 3 par ligne */
+        .exams {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 colonnes maximum */
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .exam {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+
+        .exam h3 {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .exam p {
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-exam-section {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Teacher Page</h1>
-    <h1>Welcome, <span th:text="${username}">User</span> !</h1>
-	
-	<!-- Ajout du bouton de déconnexion -->
-	<form action="#" th:action="@{/logout}" method="post">
-	    <button type="submit">Logout</button>
-	</form>
-	
-	
+    <div class="container">
+        <!-- Section de navigation -->
+        <div class="navigation">
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="logout-button">🚪 Se déconnecter</button>
+            </form>
+        </div>
+
+        <h1>Bienvenue, <span th:text="${username}">Nom de l'enseignant</span> !</h1>
+
+        <!-- Section pour créer un nouvel examen -->
+        <section>
+            <h2>Créer un nouvel examen</h2>
+            <form th:action="@{/teacher/create-exam}" method="post">
+                <label for="examTitle">Titre de l'examen :</label>
+                <input type="text" id="examTitle" name="examTitle" placeholder="Entrez le titre de l'examen" required />
+
+                <label for="courseId">Sélectionner un cours :</label>
+                <select id="courseId" name="courseId" required>
+                    <option value="" disabled selected>Choisir un cours</option>
+                    <option th:each="course : ${allCourses}" th:value="${course.id}" th:text="${course.title}"></option>
+                </select>
+
+                <button type="submit" class="btn btn-success">➕ Ajouter un examen</button>
+            </form>
+        </section>
+
+        <!-- Section des cours et leurs examens -->
+        <section>
+            <h2>Vos Cours</h2>
+            <div class="courses">
+                <!-- Loop à travers les cours -->
+                <div th:each="course : ${teacherCourses}">
+                    <div class="course">
+                        <h3 th:text="${course.title}">Titre du cours</h3>
+                        <p th:text="|ID du cours : ${course.id}|"></p>
+
+                        <!-- Examens associés au cours -->
+                        <div class="exams">
+                            <h4>Examens associés :</h4>
+
+                            <div th:each="exam : ${course.exams}">
+                                <div class="exam">
+                                    <h3 th:text="${exam.examTitle}">Titre de l'examen</h3>
+                                    <p th:text="|ID de l'examen : ${exam.id}|"></p>
+
+                                    <!-- Liens pour gérer et supprimer l'examen -->
+                                    <a th:href="@{/teacher/manage-exam/{courseId}/{examId}(courseId=${course.id}, examId=${exam.id})}" class="btn btn-primary">📚 Gérer l'examen</a>
+                                    <form th:action="@{/teacher/delete-exam/{examId}(examId=${exam.id})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger">🗑 Supprimer</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
 </body>
 </html>
