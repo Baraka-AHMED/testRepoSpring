@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "ca6a0060-85b4-4047-ba24-bf26c67b897a",
+		"name": "QuizController API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42737869"
+	},
+	"item": [
+		{
+			"name": "Get all quizzes",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9001/quizzes/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"quizzes",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new quiz",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"New Quiz\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9001/quizzes/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"quizzes",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete quiz by ID",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9001/quizzes/deleteById?id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"quizzes",
+						"deleteById"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

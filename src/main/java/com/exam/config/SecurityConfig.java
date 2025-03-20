@@ -19,7 +19,7 @@ public class SecurityConfig {
             // Autoriser l'accès aux pages publiques (inscription, connexion)
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/","/register", "/login", "/h2-console/**", "/users/**").permitAll()  // Permet l'accès aux routes d'inscription et de connexion
+                    .requestMatchers("/","/register", "/login", "/h2-console/**", "/users/**", "/courses/**", "/questions/**", "/quizzes/**", "/exams/**").permitAll()  // Permet l'accès aux routes d'inscription et de connexion
                     .requestMatchers("/admin/home").hasRole("ADMIN")
                     .requestMatchers("/teacher/home").hasRole("TEACHER")
                     .requestMatchers("/student/home").hasRole("STUDENT")
