@@ -73,7 +73,7 @@
                         <div class="col-md-8">
                             <select class="form-select" name="courseId" required>
                                 <option value="" disabled selected>Choisir un cours</option>
-                                <option th:each="course : ${allCourses}" th:value="${course.id}" th:text="${course.title}">Nom du cours</option>
+                                <option th:each="course : ${availableCourses}" th:value="${course.id}" th:text="${course.title}">Nom du cours</option>
                             </select>
                         </div>
                         <div class="col-md-4">
