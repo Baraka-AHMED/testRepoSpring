@@ -6,11 +6,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.HeaderSpec.FrameOptionsSpec;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.function.ServerRequest.Headers;
 
 @Configuration
 @EnableWebSecurity
@@ -30,12 +32,13 @@ public class SecurityConfig {
         http
         	.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((authz) -> authz
-                    .requestMatchers("/", "/login", "/register", "/api/login", "/api/register").permitAll() // Autorise /api/login sans authentification
+                    .requestMatchers("/", "/h2-console/**", "/login", "/register", "/api/**", "/api/register").permitAll() // Autorise /api/login sans authentification
                     .requestMatchers("/admin/**").hasRole("ADMIN")   // Accès réservé aux administrateurs
                     .requestMatchers("/teacher/**").hasRole("TEACHER") // Accès réservé aux enseignants
                     .requestMatchers("/student/**").hasRole("STUDENT") // Accès réservé aux étudiants
                     .anyRequest().authenticated() // Autres requêtes API nécessitent une authentification
                 )
+            .headers(Headers -> Headers.frameOptions(frameOps -> frameOps.sameOrigin()))
             .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement((sessionManagement) ->
                 sessionManagement.disable()

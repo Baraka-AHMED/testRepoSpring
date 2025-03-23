@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un Examen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Créer un Examen</h1>
+        <form th:action="@{/teacher/create-exam}" method="post">
+            <input type="hidden" name="courseId" th:value="${course.id}" />
+
+            <label for="examTitle">Titre de l'examen :</label>
+            <input type="text" id="examTitle" name="examTitle" placeholder="Entrez le titre" required />
+
+            <label for="examDate">Date de l'examen :</label>
+            <input type="date" id="examDate" name="examDate" required />
+			
+            <button type="submit" class="btn btn-success">✅ Créer l'examen</button>
+        </form>
+
+        <a th:href="@{/teacher/dashboard}" class="btn btn-cancel">❌ Annuler</a>
+    </div>
+</body>
+</html>

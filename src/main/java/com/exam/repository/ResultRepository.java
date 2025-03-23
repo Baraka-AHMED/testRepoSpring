@@ -1,14 +1,14 @@
 package com.exam.repository;
 
-import com.exam.model.Exam;
+import com.exam.model.Result;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
-public interface ExamRepository extends JpaRepository<Exam, Long> {
+public interface ResultRepository extends JpaRepository<Result, Long> {
 	
-    List<Exam> findByCourseId(Long courseId);
-    
+    List<Result> findByExamId(Long examId);
     
 }

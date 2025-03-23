@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gérer l'Examen</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 70%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background-color: #4CAF50;
+        }
+        .navbar a {
+            color: white;
+        }
+        .question-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .question-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .question-title {
+            font-weight: bold;
+        }
+        .question-details {
+            margin-left: 20px;
+        }
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .question-actions .btn {
+            margin-left: 10px;
+        }
+        .question-actions form {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Tableau de bord Professeur</a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teacher/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white" href="/logout">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <h1>Gérer l'Examen : <span th:text="${exam.examTitle}"></span></h1>
+
+        <!-- Formulaire pour modifier l'examen -->
+        <form th:action="@{/teacher/update-exam}" method="post">
+            <input type="hidden" name="examId" th:value="${exam.id}" />
+            <input type="hidden" name="courseId" th:value="${course.id}" />
+
+            <div class="form-group">
+                <label for="examTitle">Titre de l'examen</label>
+                <input type="text" id="examTitle" name="examTitle" class="form-control" 
+                       th:value="${exam.examTitle}" required 
+                       th:disabled="${exam.examStatus.name() != 'DRAFT'}" />
+            </div>
+
+            <div class="form-group">
+                <label for="examDate">Date de l'examen</label>
+                <input type="date" id="examDate" name="examDate" class="form-control"
+                       th:value="${exam.examDate}" required 
+                       th:disabled="${exam.examStatus.name() != 'DRAFT'}" />
+            </div>
+
+            <!-- Bouton pour modifier l'examen (affiché uniquement si l'examen n'est pas publié) -->
+            <div th:if="${exam.examStatus.name() == 'DRAFT'}">
+                <button type="submit" class="btn btn-primary">📝 Modifier l'examen</button>
+            </div>
+        </form>
+
+        <br>
+
+        <!-- Liste des questions de l'examen -->
+        <h4>Questions :</h4>
+        <ul class="question-list">
+            <li th:each="question, iterStat : ${exam.questions}">
+                <div>
+                    <span class="question-title" th:text="'Question ' + ${iterStat.index + 1} + ' : ' + ${question.questionTitle}"></span>
+                    <div class="question-details">
+                        <p><strong>Catégorie :</strong> <span th:text="${question.category}"></span></p>
+                        <p><strong>Niveau de difficulté :</strong> <span th:text="${question.difficultyLevel}"></span></p>
+                        <p><strong>Réponses :</strong></p>
+                        <ul>
+                            <li><span th:text="'Option 1 : ' + ${question.option1}"></span></li>
+                            <li><span th:text="'Option 2 : ' + ${question.option2}"></span></li>
+                            <li><span th:text="'Option 3 : ' + ${question.option3}"></span></li>
+                            <li><span th:text="'Option 4 : ' + ${question.option4}"></span></li>
+                        </ul>
+                        <p><strong>Réponse correcte :</strong> <span th:text="'Option ' + ${question.rightAnswer}"></span></p>
+                    </div>
+
+                    <!-- Actions de modification et suppression à la fin des détails de chaque question -->
+                    <div class="question-actions" th:if="${exam.examStatus.name() == 'DRAFT'}">
+                        <!-- Modifier une question -->
+                        <a th:href="@{/teacher/update-question/{examId}/{questionId}(examId=${exam.id}, questionId=${question.id})}" 
+                           class="btn btn-warning btn-sm">✏️ Modifier</a>
+
+                        <!-- Supprimer une question -->
+                        <form th:action="@{/teacher/delete-question/{examId}/{questionId}(examId=${exam.id}, questionId=${question.id})}" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">❌ Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <br>
+
+        <!-- Bouton pour ajouter une question (affiché uniquement si l'examen est draft) -->
+        <div th:if="${exam.examStatus.name() == 'DRAFT'}">
+            <a th:href="@{/teacher/create-question/{examId}(examId=${exam.id})}" class="btn btn-secondary">➕ Ajouter une question</a>
+        </div>
+
+        <br><br>
+
+        <!-- Bouton pour publier l'examen -->
+        <form th:action="@{/teacher/publish-exam/{examId}(examId=${exam.id})}" method="post" th:if="${exam.examStatus.name() != 'PUBLISHED'}">
+            <button type="submit" class="btn btn-success">📤 Publier l'examen</button>
+        </form>
+
+        <br><br>
+
+        <!-- Bouton pour revenir à la page précédente -->
+        <a th:href="@{/teacher/dashboard}" class="btn btn-danger">🔙 Retour au tableau de bord</a>
+    </div>
+</body>
+</html>

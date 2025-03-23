@@ -41,6 +41,7 @@ public class RegisterController {
 			return "redirect:/login";
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println("Erreur de création user : "+e.getMessage());
 			return "redirect:/register";
 		}
 	}

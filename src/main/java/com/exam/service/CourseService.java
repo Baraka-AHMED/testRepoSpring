@@ -1,7 +1,12 @@
 package com.exam.service;
 
 import com.exam.model.Course;
+import com.exam.model.User;
 import com.exam.repository.CourseRepository;
+import com.exam.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +17,9 @@ import java.util.Optional;
 public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Course> getAllCourses() {
         return (List<Course>) courseRepository.findAll();
@@ -39,7 +47,35 @@ public class CourseService {
 		return courseRepository.findCoursesByTeacherId(teacherId);
 	}
 
-	public void enrollStudentInCourse(Long studentId, Long courseId) {
-		courseRepository.enrollStudentInCourse(studentId, courseId);
-	}
+	@Transactional
+	public void enrollStudentInCourse(Long courseId, Long studentId) {
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new RuntimeException("Course not found"));
+        
+        User student = userRepository.findById(studentId)
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        course.getStudents().add(student);
+        student.getCourses().add(course);
+
+        courseRepository.save(course);
+        userRepository.save(student);
+    }
+	
+	@Transactional
+    public void unenrollStudent(Long courseId, Long studentId) {
+        Course course = courseRepository.findById(courseId)
+            .orElseThrow(() -> new RuntimeException("Course not found"));
+        
+        User student = userRepository.findById(studentId)
+            .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        course.getStudents().remove(student);
+        student.getCourses().remove(course);
+
+        courseRepository.save(course);  
+        userRepository.save(student);  
+    }
+
+	
 }

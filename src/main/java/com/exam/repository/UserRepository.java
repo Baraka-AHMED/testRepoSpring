@@ -1,5 +1,6 @@
 package com.exam.repository;
 
+import com.exam.model.Course;
 import com.exam.model.User;
 import com.exam.model.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	boolean existsByUsername(String username);
 
 	Optional<User> findByUsernameOrEmail(String username, String email);
+
+	@Query("SELECT u FROM User u JOIN u.courses c WHERE c = :course")
+	List<User> getUsersByCourse(Course course);
+	
+    @Query("SELECT u FROM User u WHERE u.role = 'STUDENT' AND u NOT IN (SELECT u FROM User u JOIN u.courses c WHERE c = :course)")
+    List<User> getUnenrolledStudents(Course course);
 
 }

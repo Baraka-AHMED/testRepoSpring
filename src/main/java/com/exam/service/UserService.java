@@ -90,10 +90,11 @@ public class UserService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("Nom d'utilisateur déjà utilisé !");
         }
-
+        /*
         if (dto.getRole() == UserRole.ADMIN) {
             throw new RuntimeException("Création d'un administrateur interdite via l'inscription !");
         }
+        */
 
         User user = mapDtoToUser(dto);
         userRepository.save(user);
@@ -126,6 +127,14 @@ public class UserService {
     	courseRepository.save(course);
     	
     }
+
+	public List<User> getUsersByCourse(Course course) {
+		return userRepository.getUsersByCourse(course);
+	}
+
+	public List<User> getUnenrolledStudents(Course course) {
+		return userRepository.getUnenrolledStudents(course);
+	}
 
 
 

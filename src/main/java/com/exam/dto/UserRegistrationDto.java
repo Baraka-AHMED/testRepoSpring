@@ -25,7 +25,7 @@ public class UserRegistrationDto {
     @NotBlank(message = "Last name is mandatory")
     private String lastName;
 
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Size(min = 4, message = "Password must be at least 4 characters long")
     private String password;
 
     @NotNull(message = "Role is mandatory")

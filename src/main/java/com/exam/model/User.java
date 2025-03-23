@@ -50,8 +50,6 @@ public class User {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
-    
-    
     @JsonIgnore
     private List<Course> courses;
 
@@ -83,13 +81,6 @@ public class User {
         }
     }
 
-    // Inscription à un examen
-    public void enrollInExam(Exam exam) {
-        if (!this.exams.contains(exam)) {
-            this.exams.add(exam);
-            exam.getStudents().add(this);
-        }
-    }
 
 
     /*
@@ -97,9 +88,6 @@ public class User {
      * Ces annotations les génèrent automatiquement sans qu'ils soient visibles dans le code
      * Sauf s'il y a une particularité dans le setter ou le getter
      */
-    
-    public void setRole (UserRole role) {
-    	this.role = role;
-    }
+
 }
 

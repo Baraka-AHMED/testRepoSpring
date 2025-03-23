@@ -1,51 +1,53 @@
 package com.exam.service;
 
-import com.exam.model.Exam;
-import com.exam.model.Question;
-import com.exam.model.User;
-import com.exam.repository.UserRepository;
-import com.exam.repository.ExamRepository;
-import com.exam.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.exam.model.Question;
+import com.exam.repository.QuestionRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuestionService {
-    @Autowired
-    private QuestionRepository questionRepository;
-    
-    @Autowired
-    private ExamRepository examRepository;
 
-    public List<Question> getAllQuestions() {
-        return (List<Question>) questionRepository.findAll();
+	@Autowired
+    private final QuestionRepository questionRepository;
+
+    @Autowired
+    public QuestionService(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
     }
 
-    public void saveQuestion(Question question) {
-        questionRepository.save(question);
+    // Récupérer toutes les questions d'un examen donné
+    public List<Question> getQuestionsByExam(Long examId) {
+        return questionRepository.findByExamId(examId);
     }
 
-    public void deleteQuestionById(Long id) {
+    // Récupérer une question par son ID
+    public Optional<Question> getQuestionById(Long id) {
+        return questionRepository.findQuestionById(id);
+    }
+
+    // Créer une nouvelle question
+    @Transactional
+    public Question createQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+
+    // Supprimer une question
+    @Transactional
+    public void deleteQuestion(Long id) {
+        if (!questionRepository.existsById(id)) {
+            throw new RuntimeException("Question not found with ID: " + id);
+        }
         questionRepository.deleteById(id);
     }
 
-    public Question getQuestionById(Long questionId) {
-        return questionRepository.findById(questionId)
-                .orElseThrow(() -> new RuntimeException("Question not found with id " + questionId));
-    }
-
-	public List<Question> findQuestionsByExamId(Long examId) {
-		return questionRepository.findQuestionsByExamId(examId);
-	}
-
-	public void saveQuestion(Question question, Long examId) {
-		
-		Exam exam = examRepository.findExamById(examId)
-				.orElseThrow(()-> new RuntimeException("Exam not found"));
-		question.setExam(exam);
+	public void save(Question question) {
 		questionRepository.save(question);
 	}
-
 }
+

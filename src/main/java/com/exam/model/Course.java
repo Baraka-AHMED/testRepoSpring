@@ -2,11 +2,17 @@ package com.exam.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 @Table(name = "course")
 public class Course {
     @Id
@@ -15,13 +21,17 @@ public class Course {
 
     @Column(nullable = false, unique = true)
     private String title;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Exam> exams = new ArrayList<>();
+    
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private User teacher;
 
     @ManyToMany(mappedBy = "courses")
     private List<User> students = new ArrayList<>();
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Exam> exams = new ArrayList<>();
 
 
     // Ajout d’un étudiant à la liste des étudiants du cours
@@ -40,35 +50,5 @@ public class Course {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public List<Exam> getExams() {
-        return exams;
-    }
-
-    public void setExams(List<Exam> exams) {
-        this.exams = exams;
-    }
-
-    public List<User> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<User> students) {
-        this.students = students;
-    }
+    
 }

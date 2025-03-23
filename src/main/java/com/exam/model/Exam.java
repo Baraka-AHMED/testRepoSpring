@@ -2,10 +2,18 @@ package com.exam.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 @Table(name = "exam")
 public class Exam {
     @Id
@@ -14,99 +22,45 @@ public class Exam {
 
     @Column(nullable = false)
     private String examTitle;
+    
+    @Column(nullable = false)
+    private LocalDate examDate;
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private User teacher;
-
     @JsonIgnore
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
-
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "exam_students",
-            joinColumns = @JoinColumn(name = "exam_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private List<User> students = new ArrayList<>();
-
-    public Exam() {}
-
-    public Exam(String examTitle, Course course, User teacher) {
-        this.examTitle = examTitle;
-        this.course = course;
-        this.teacher = teacher;
+    
+    @OneToMany(mappedBy = "exam")
+    private List<Result> results = new ArrayList<>();
+    
+    @Enumerated(EnumType.STRING) 
+    private ExamStatus examStatus;
+    
+    @PrePersist
+    public void prePersist() {
+        this.examStatus = ExamStatus.DRAFT;  // Par défaut, un examen est en mode "élaboration"
     }
-
-    public void addStudent(User student) {
-        if (!students.contains(student)) {
-            students.add(student);
-            student.getExams().add(this);
+    
+    /*
+     * -----------------------------------------------------------------------------------------------------------------------------------
+     */
+    
+    // Vérifier et mettre à jour le statut de l'examen
+    public void updateStatus() {
+        if (results.isEmpty() && LocalDate.now().isBefore(examDate)) {
+            this.examStatus = ExamStatus.PUBLISHED; // L'examen est publié
+        } else if (!results.isEmpty() && LocalDate.now().isAfter(examDate)) {
+            this.examStatus = ExamStatus.CLOSED; // L'examen est clôturé après correction
         }
     }
 
-    // Retirer
-    public void removeStudent(User student) {
-        if (students.contains(student)) {
-            students.remove(student);
-            student.getExams().remove(this);
-        }
+    public void addResult(Result result) {
+        this.results.add(result);
+        updateStatus(); // Met à jour le statut automatiquement
     }
-
-    public void setCourse(Course course) {
-        this.course = course;
-        if (!course.getExams().contains(this)) {
-            course.getExams().add(this);
-        }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getExamTitle() {
-        return examTitle;
-    }
-
-    public void setExamTitle(String examTitle) {
-        this.examTitle = examTitle;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public User getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(User teacher) {
-        this.teacher = teacher;
-    }
-
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
-
-    public List<User> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<User> students) {
-        this.students = students;
-    }
+    
 }

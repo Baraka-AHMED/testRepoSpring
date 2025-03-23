@@ -1,68 +1,137 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Étudiants du cours</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Étudiants inscrits</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
         body {
-            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
-        .navbar {
-            background-color: #007bff;
+
+        .container {
+            width: 60%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .navbar-brand, .nav-link {
-            color: white !important;
+
+        h1 {
+            text-align: center;
+            color: #333;
         }
-        .card {
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+        .student-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .student-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Tableau de bord Professeur</a>
-            <div class="collapse navbar-collapse justify-content-end">
+            <span class="navbar-brand" >Tableau de bord Professeur</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/teacher/dashboard">Dashboard</a>
+                        <a class="nav-link" href="/teacher/dashboard">🏠 Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-danger text-white" href="/logout">Déconnexion</a>
+                        <a class="nav-link btn btn-danger text-white" href="/logout">🚪 Déconnexion</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenu principal -->
-    <div class="container mt-4">
-        <div class="card p-4">
-            <h2 class="text-center">Étudiants inscrits au cours : <span th:text="${course.title}" class="text-primary"></span></h2>
+    <div class="container">
+        <h1>Étudiants inscrits à <span th:text="${course.title}"></span></h1>
 
-            <table class="table table-bordered table-striped mt-3">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Nom</th>
-						<th>Prénom</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="student : ${students}">
-                        <td th:text="${student.lastName}"></td>
-						<td th:text="${student.firstName}"></td>
-                        <td th:text="${student.email}"></td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Liste des étudiants inscrits -->
+        <ul class="student-list">
+            <li th:each="student : ${enrolledStudents}">
+                <span th:text="|${student.userId} - ${student.firstName} ${student.lastName}"></span>
+                <form th:action="@{/teacher/unsubscribe-student}" method="post">
+                    <input type="hidden" name="courseId" th:value="${course.id}" />
+                    <input type="hidden" name="studentId" th:value="${student.userId}" />
+                    <button type="submit" class="btn btn-danger">❌ Désinscrire</button>
+                </form>
+            </li>
+        </ul>
 
-        </div>
+        <!-- Formulaire pour inscrire un nouvel étudiant -->
+        <form th:action="@{/teacher/subscribe-student}" method="post">
+            <input type="hidden" name="courseId" th:value="${course.id}" />
+
+            <label for="studentId">Ajouter un étudiant :</label>
+            <select id="studentId" name="studentId" required class="form-select">
+                <option value="" disabled selected>Choisir un étudiant</option>
+                <option th:each="student : ${unenrolledStudents}" 
+                        th:value="${student.userId}" 
+                        th:text="|${student.userId} - ${student.firstName} ${student.lastName}">
+                </option>
+            </select>
+
+            <button type="submit" class="btn btn-success">➕ Inscrire</button>
+        </form>
+
+        <a th:href="@{/teacher/dashboard}" class="back-link">🔙 Retour au tableau de bord</a>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

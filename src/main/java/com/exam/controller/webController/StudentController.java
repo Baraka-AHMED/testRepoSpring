@@ -24,7 +24,6 @@ import com.exam.model.Course;
 import com.exam.model.Exam;
 import com.exam.model.User;
 import com.exam.service.CourseService;
-import com.exam.service.ExamService;
 import com.exam.service.UserService;
 
 @Controller
@@ -33,6 +32,7 @@ public class StudentController {
 
     @Autowired
     private CourseService courseService;  // Service pour récupérer les cours
+    /*
     @Autowired
     private ExamService examService;      // Service pour récupérer les examens
     @Autowired
@@ -122,6 +122,6 @@ public class StudentController {
         return "redirect:/student/edit-profile";
     }
 
-
+*/
     
 }

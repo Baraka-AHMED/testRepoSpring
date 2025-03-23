@@ -1,12 +1,12 @@
 package com.exam.service;
 
 import com.exam.model.Exam;
-import com.exam.model.Course;
+import com.exam.model.ExamStatus;
 import com.exam.repository.ExamRepository;
-import com.exam.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,69 +16,40 @@ public class ExamService {
     @Autowired
     private ExamRepository examRepository;
 
-    @Autowired
-    private CourseRepository courseRepository;
-
-    /**
-     * Récupère la liste de tous les examens.
-     */
-    public List<Exam> getAllExams() {
-        return (List<Exam>) examRepository.findAll();
+    // Ajouter un examen
+    public Exam addExam(Exam exam) {
+        return examRepository.save(exam);
     }
 
-    /**
-     * Récupère un examen par son ID.
-     */
+    // Récupérer un examen par ID
     public Optional<Exam> getExamById(Long id) {
         return examRepository.findById(id);
     }
 
-    /**
-     * Ajoute un nouvel examen après validation de l'existence du cours associé.
-     */
-    public void addExam(Exam exam) {
-        if (exam.getCourse() == null || !courseRepository.existsById(exam.getCourse().getId())) {
-            throw new IllegalArgumentException("Le cours associé à cet examen n'existe pas.");
-        }
-        examRepository.save(exam);
-    }
-
-    /**
-     * Met à jour un examen existant.
-     */
-    public void updateExam(Exam exam) {
-        if (!examRepository.existsById(exam.getId())) {
-            throw new IllegalArgumentException("L'examen que vous essayez de mettre à jour n'existe pas.");
-        }
-        examRepository.save(exam);
-    }
-
-    /**
-     * Supprime un examen par son ID après vérification de son existence.
-     */
-    public void deleteExamById(Long id) {
-        if (!examRepository.existsById(id)) {
-            throw new IllegalArgumentException("L'examen que vous essayez de supprimer n'existe pas.");
-        }
+    // Supprimer un examen par ID
+    public void deleteExam(Long id) {
         examRepository.deleteById(id);
     }
 
-    public Exam getFirstExamByTeacher(String teacherName) {
-        return examRepository.findFirstExamByTeacher(teacherName);
+    // Récupérer tous les examens d'un cours
+    public List<Exam> getExamsByCourseId(Long courseId) {
+        return examRepository.findByCourseId(courseId);
     }
-
-	public List<Exam> findExamsByCourseId(Long courseId) {
-		return examRepository.findExamsByCourseId(courseId);
-	}
-
-	public Exam findExamById(Long examId) {
-		Exam exam = examRepository.findExamById(examId)
-				.orElseThrow(()-> new RuntimeException("Exam not found."));
-		return exam;
-	}
-
-	public List<Exam> findExamsByTeacherId(Long teacherId) {
-		return examRepository.findExamsByTeacherId(teacherId);
-	}
-
+    
+    public void updateExam(Long examId, String examTitle, LocalDate examDate) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+        exam.setExamTitle(examTitle);
+        exam.setExamDate(examDate);
+        examRepository.save(exam);
+    }
+    
+    public boolean publishExam(Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+        exam.setExamStatus(ExamStatus.PUBLISHED);
+        examRepository.save(exam);
+        return true;
+    }
+    
 }
