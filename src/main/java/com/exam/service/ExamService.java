@@ -2,11 +2,16 @@ package com.exam.service;
 
 import com.exam.model.Exam;
 import com.exam.model.ExamStatus;
+import com.exam.model.Result;
+import com.exam.model.User;
 import com.exam.repository.ExamRepository;
+import com.exam.repository.ResultRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,10 +20,27 @@ public class ExamService {
 
     @Autowired
     private ExamRepository examRepository;
+    
+    @Autowired ResultRepository resultRepository;
 
     // Ajouter un examen
-    public Exam addExam(Exam exam) {
-        return examRepository.save(exam);
+    public Exam addExam(Exam exam) { 
+    	
+    	examRepository.save(exam);
+    	
+    	List<User>enrolledStudents  = enrolledStudents(exam);
+    	List<Result> results = new ArrayList<>();
+    	for (User student : enrolledStudents) {
+            Result result = new Result();
+            result.setExam(exam);
+            result.setStudent(student);
+            result.setScore(0.0); // ou 0.0 si tu préfères
+            results.add(result);
+        }
+    	resultRepository.saveAll(results);
+        examRepository.save(exam);
+        
+        return exam;
     }
 
     // Récupérer un examen par ID
@@ -51,5 +73,14 @@ public class ExamService {
         examRepository.save(exam);
         return true;
     }
+    
+    public List<User> enrolledStudents(Exam exam ){
+    	return exam.getCourse().getStudents();
+    }
+
+	public void save(Exam exam) {
+		examRepository.save(exam);
+	}
+
     
 }

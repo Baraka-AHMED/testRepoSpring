@@ -4,11 +4,15 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.DecimalMax;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 public class ResultDto {
+	
     @NotBlank(message = "La note est obligatoire")
     @DecimalMin(value = "0", message = "La note doit être supérieure ou égale à 0")
     @DecimalMax(value = "20", message = "La note doit être inférieure ou égale à 20")
@@ -17,6 +21,7 @@ public class ResultDto {
     private Long studentId;
 
     private Long examId;
+    
 
     
 }

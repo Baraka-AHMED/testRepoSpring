@@ -59,26 +59,43 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th>ID Étudiant</th>
                         <th>Nom de l'étudiant</th>
                         <th>Note (0-20)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="resultDTO, iterStat : ${resultDTOs}">
-						<td th:text="${resultDTO.student.userID}"></td>
-                        <td th:text="${resultDTO.student.firstName} + ' ' + ${resultDTO.student.lastName}"></td>
-                        <td>
-                            <input type="number" class="form-control" name="resultDTOs[${iterStat.index}].score" 
-                                   th:value="${resultDTO.score}" min="0" max="20" step="0.1" 
-                                   th:disabled="${exam.examStatus == 'CLOSED'}" required />
-                        </td>
-                    </tr>
+					<tr th:each="student, iterStat : ${studentsEnrolled}">
+					    <!-- Afficher l'ID de l'étudiant -->
+					    <td th:text="${student.userId}"></td>
+
+					    <!-- Afficher le nom complet de l'étudiant -->
+					    <td th:text="|${student.firstName} ${student.lastName}|"></td>
+
+					    <!-- Si l'examen est fermé, afficher la note -->
+					    <td th:if="${exam.examStatus.name() == 'CLOSED'}">
+					        <span th:text="${resultDTOs != null && resultDTOs[iterStat.index] != null ? resultDTOs[iterStat.index].score : 'N/A'}"></span>
+					    </td>
+
+					    <!-- Si l'examen est publié, afficher un champ de saisie -->
+					    <td th:if="${exam.examStatus.name() == 'PUBLISHED'}">
+							<input type="number" class="form-control"
+							       name="resultDTOs[${iterStat.index}].score"
+							       th:value="0"
+							       min="0" max="20" step="0.5" required />
+
+					        <!-- Champs cachés pour lier l'étudiant et l'examen -->
+					        <input type="hidden" name="resultDTOs[${iterStat.index}].userId" th:value="${student.userId}" />
+					        <input type="hidden" name="resultDTOs[${iterStat.index}].examId" th:value="${exam.id}" />
+					    </td>
+					</tr>
                 </tbody>
             </table>
 
-            <!-- Si tous les résultats sont remplis, on affiche le bouton de validation -->
+            <!-- Bouton de validation des résultats, affiché seulement si l'examen est PUBLISHED et s'il y a des étudiants -->
             <div class="form-group">
-                <button type="submit" class="btn btn-success btn-block" th:disabled="${exam.examStatus == 'CLOSED' || #lists.isEmpty(resultDTOs)}">
+                <button type="submit" class="btn btn-success btn-block" 
+                        th:if="${exam.examStatus.name() == 'PUBLISHED' and not #lists.isEmpty(studentsEnrolled)}">
                     Valider les résultats
                 </button>
             </div>
@@ -86,15 +103,15 @@
 
         <br>
 
-        <!-- Si l'examen est publié et les résultats validés, on affiche un message -->
-        <div th:if="${exam.examStatus == 'CLOSED'}">
+        <!-- Message si l'examen est fermé -->
+        <div th:if="${exam.examStatus.name() == 'CLOSED'}">
             <div class="alert alert-success">
                 <strong>Les résultats de l'examen sont validés et l'examen est maintenant fermé.</strong>
             </div>
         </div>
 
         <!-- Bouton pour revenir à la gestion des examens -->
-        <a th:href="@{/teacher/exam/{examId}(examId=${exam.id})}" class="btn btn-danger">Retour à la gestion de l'examen</a>
+        <a th:href="@{/teacher/manage-exam/{courseId}/{examId}(courseId = ${exam.course.id}, examId=${exam.id})}" class="btn btn-danger">Retour à la gestion de l'examen</a>
     </div>
 </body>
 </html>

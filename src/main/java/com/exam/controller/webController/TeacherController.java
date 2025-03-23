@@ -2,6 +2,7 @@ package com.exam.controller.webController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import com.exam.dto.QuestionDto;
 import com.exam.dto.ResultDto;
 import com.exam.model.Course;
 import com.exam.model.Exam;
+import com.exam.model.ExamStatus;
 import com.exam.model.Question;
 import com.exam.model.Quiz;
 import com.exam.model.Result;
@@ -38,6 +40,7 @@ import com.exam.service.ResultService;
 import com.exam.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Controller
@@ -246,38 +249,69 @@ public class TeacherController {
             return "error";
         }
 
-        if (!exam.getExamStatus().name().equals("PUBLISHED")) {
+        if (exam.getExamStatus().name().equals("DRAFT")) {
             model.addAttribute("error", "L'examen n'est pas publié. Impossible de valider les résultats.");
             return "error";
         }
 
+        List<User> studentsEnrolled = exam.getCourse().getStudents();
         List<Result> results = resultService.getResults(examId);
+        List<ResultDto> resultDTOs = results.stream()
+        	    .map(result -> new ResultDto(result.getScore(), result.getStudent().getUserId(), examId))
+        	    .collect(Collectors.toList());
+        
+        System.out.println("resultDtos Size : " + resultDTOs.size());
+        
         model.addAttribute("exam", exam);
+        model.addAttribute("studentsEnrolled", studentsEnrolled);
         model.addAttribute("results", results);
-        model.addAttribute("resultDTOs", new ResultDto[results.size()]);
+        model.addAttribute("resultDTOs", resultDTOs);
         return "exam_results";
     }
     
     
     @PostMapping("exam-results/validate/{examId}")
-    public String validateResults(@PathVariable Long examId, @Valid @ModelAttribute("resultDTOs") List<ResultDto> resultDTOs,
-                                  BindingResult resultBinding, Model model) {
+    @Transactional
+    public boolean validateResults(
+    		@PathVariable Long examId, 
+    		@ModelAttribute("resultDTOs") List<ResultDto> resultDTOs,
+    		BindingResult resultBinding, 
+            Model model) {
+        
+        Exam exam = examService.getExamById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+        
+        resultDTOs.forEach(dto -> {
+            System.out.println("DTO Exam ID: " + dto.getExamId());  // Affiche l'examen dans chaque DTO
+        });
+        
+        System.out.println("01");
+        
+        if (exam.getExamStatus().name().equals("PUBLISHED")) {
+            System.out.println("02");
+            System.out.println("dto 2 size :"+resultDTOs.size());
+            
+            for (ResultDto resultDTO : resultDTOs) {
+            	System.out.println("0X");
+                Result result = resultService.getResultByExamAndStudent(exam.getId(), resultDTO.getStudentId());
+                
+                result.setScore(resultDTO.getScore());
+                resultService.save(result);  // Save to apply update
+                System.out.println("Updated result for user " + resultDTO.getStudentId());
+                
+            }
 
-        if (resultBinding.hasErrors()) {
-            model.addAttribute("exam", examService.getExamById(examId));
-            return "exam_results";
+            System.out.println("03");
+
+            exam.setExamStatus(ExamStatus.CLOSED);
+            examService.save(exam);
+
+            return true;
         }
-
-        boolean success = resultService.validateResults(examId, resultDTOs);
-
-        if (success) {
-            model.addAttribute("success", "Les résultats ont été validés et l'examen est maintenant fermé.");
-            return "redirect:/teacher/dashboard";  // Rediriger après la validation réussie
-        } else {
-            model.addAttribute("error", "Une erreur s'est produite lors de la validation des résultats.");
-            return "exam_results";
-        }
+        return false;
     }
+
+
 
     
     /*

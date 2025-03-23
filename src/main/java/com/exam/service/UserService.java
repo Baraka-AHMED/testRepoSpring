@@ -122,7 +122,7 @@ public class UserService {
     	
     	student.getCourses().add(course);
     	course.getStudents().add(student);
-    	
+
     	userRepository.save(student);
     	courseRepository.save(course);
     	
@@ -134,6 +134,10 @@ public class UserService {
 
 	public List<User> getUnenrolledStudents(Course course) {
 		return userRepository.getUnenrolledStudents(course);
+	}
+
+	public Object getEnrolledStudents(Course course) {
+		return userRepository.getEnrolledStudents(course);
 	}
 
 
