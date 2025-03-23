@@ -268,52 +268,33 @@ public class TeacherController {
         model.addAttribute("resultDTOs", resultDTOs);
         return "exam_results";
     }
-    
-    
-    @PostMapping("exam-results/validate/{examId}")
+
+    @PostMapping("/exam-results/validate-single")
     @Transactional
-    public boolean validateResults(
-    		@PathVariable Long examId, 
-    		@ModelAttribute("resultDTOs") List<ResultDto> resultDTOs,
-    		BindingResult resultBinding, 
-            Model model) {
-        
-        Exam exam = examService.getExamById(examId)
+    public String validateSingleResult(
+            @ModelAttribute ResultDto resultDto,
+            RedirectAttributes redirectAttributes
+    ) {
+        Exam exam = examService.getExamById(resultDto.getExamId())
                 .orElseThrow(() -> new RuntimeException("Exam not found"));
-        
-        resultDTOs.forEach(dto -> {
-            System.out.println("DTO Exam ID: " + dto.getExamId());  // Affiche l'examen dans chaque DTO
-        });
-        
-        System.out.println("01");
-        
-        if (exam.getExamStatus().name().equals("PUBLISHED")) {
-            System.out.println("02");
-            System.out.println("dto 2 size :"+resultDTOs.size());
-            
-            for (ResultDto resultDTO : resultDTOs) {
-            	System.out.println("0X");
-                Result result = resultService.getResultByExamAndStudent(exam.getId(), resultDTO.getStudentId());
-                
-                result.setScore(resultDTO.getScore());
-                resultService.save(result);  // Save to apply update
-                System.out.println("Updated result for user " + resultDTO.getStudentId());
-                
-            }
 
-            System.out.println("03");
-
-            exam.setExamStatus(ExamStatus.CLOSED);
-            examService.save(exam);
-
-            return true;
+        if (!"PUBLISHED".equals(exam.getExamStatus().name())) {
+            redirectAttributes.addFlashAttribute("error", "Examen non publié.");
+            return "redirect:/teacher/exam-results/" + exam.getId();
         }
-        return false;
+
+        Result result = resultService.getResultByExamAndStudent(resultDto.getExamId(), resultDto.getStudentId());
+        result.setScore(resultDto.getScore());
+        resultService.save(result);
+
+        redirectAttributes.addFlashAttribute("success", "Note enregistrée.");
+        return "redirect:/teacher/exam-results/" + exam.getId();
     }
 
 
 
-    
+
+
     /*
      * ---------------------------------------------------------------------------------------------------------------------------------------------
      */

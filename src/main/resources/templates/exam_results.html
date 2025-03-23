@@ -25,6 +25,7 @@
         }
         .table th, .table td {
             text-align: center;
+            vertical-align: middle;
         }
         .btn-block {
             width: 100%;
@@ -32,86 +33,67 @@
     </style>
 </head>
 <body>
-    <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Tableau de bord Professeur</a>
-            <div class="collapse navbar-collapse justify-content-end">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/teacher/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-danger text-white" href="/logout">Déconnexion</a>
-                    </li>
-                </ul>
-            </div>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Tableau de bord Professeur</a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/teacher/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="/logout">Déconnexion</a></li>
+            </ul>
         </div>
-    </nav>
-
-    <!-- Contenu principal -->
-    <div class="container">
-        <h1>Résultats de l'Examen : <span th:text="${exam.examTitle}"></span></h1>
-        <h4>Cours concerné : <span th:text="${exam.course.title}"></span></h4>
-
-        <!-- Liste des résultats sous forme de tableau -->
-        <form th:action="@{/teacher/exam-results/validate/{examId}(examId=${exam.id})}" method="post">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID Étudiant</th>
-                        <th>Nom de l'étudiant</th>
-                        <th>Note (0-20)</th>
-                    </tr>
-                </thead>
-                <tbody>
-					<tr th:each="student, iterStat : ${studentsEnrolled}">
-					    <!-- Afficher l'ID de l'étudiant -->
-					    <td th:text="${student.userId}"></td>
-
-					    <!-- Afficher le nom complet de l'étudiant -->
-					    <td th:text="|${student.firstName} ${student.lastName}|"></td>
-
-					    <!-- Si l'examen est fermé, afficher la note -->
-					    <td th:if="${exam.examStatus.name() == 'CLOSED'}">
-					        <span th:text="${resultDTOs != null && resultDTOs[iterStat.index] != null ? resultDTOs[iterStat.index].score : 'N/A'}"></span>
-					    </td>
-
-					    <!-- Si l'examen est publié, afficher un champ de saisie -->
-					    <td th:if="${exam.examStatus.name() == 'PUBLISHED'}">
-							<input type="number" class="form-control"
-							       name="resultDTOs[${iterStat.index}].score"
-							       th:value="0"
-							       min="0" max="20" step="0.5" required />
-
-					        <!-- Champs cachés pour lier l'étudiant et l'examen -->
-					        <input type="hidden" name="resultDTOs[${iterStat.index}].userId" th:value="${student.userId}" />
-					        <input type="hidden" name="resultDTOs[${iterStat.index}].examId" th:value="${exam.id}" />
-					    </td>
-					</tr>
-                </tbody>
-            </table>
-
-            <!-- Bouton de validation des résultats, affiché seulement si l'examen est PUBLISHED et s'il y a des étudiants -->
-            <div class="form-group">
-                <button type="submit" class="btn btn-success btn-block" 
-                        th:if="${exam.examStatus.name() == 'PUBLISHED' and not #lists.isEmpty(studentsEnrolled)}">
-                    Valider les résultats
-                </button>
-            </div>
-        </form>
-
-        <br>
-
-        <!-- Message si l'examen est fermé -->
-        <div th:if="${exam.examStatus.name() == 'CLOSED'}">
-            <div class="alert alert-success">
-                <strong>Les résultats de l'examen sont validés et l'examen est maintenant fermé.</strong>
-            </div>
-        </div>
-
-        <!-- Bouton pour revenir à la gestion des examens -->
-        <a th:href="@{/teacher/manage-exam/{courseId}/{examId}(courseId = ${exam.course.id}, examId=${exam.id})}" class="btn btn-danger">Retour à la gestion de l'examen</a>
     </div>
+</nav>
+
+<div class="container">
+    <h1>Résultats de l'Examen : <span th:text="${exam.examTitle}"></span></h1>
+    <h4>Cours concerné : <span th:text="${exam.course.title}"></span></h4>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID Étudiant</th>
+            <th>Nom de l'étudiant</th>
+            <th>Note (0-20)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student, iterStat : ${studentsEnrolled}">
+            <td th:text="${student.userId}"></td>
+            <td th:text="|${student.firstName} ${student.lastName}|"></td>
+
+            <!-- Si fermé, juste l'affichage -->
+            <td th:if="${exam.examStatus.name() == 'CLOSED'}">
+                <span th:text="${resultDTOs[iterStat.index]?.score ?: 'N/A'}"></span>
+            </td>
+
+            <!-- Si publié, formulaire ligne par ligne -->
+            <td th:if="${exam.examStatus.name() == 'PUBLISHED'}">
+                <form th:action="@{/teacher/exam-results/validate-single}" method="post" class="d-flex justify-content-center align-items-center">
+                    <input type="number" class="form-control"
+                           name="score"
+                           th:value="${resultDTOs[iterStat.index]?.score ?: 0}"
+                           min="0" max="20" step="0.5" required style="width:100px; margin-right:10px;"/>
+                    <input type="hidden" name="studentId" th:value="${student.userId}" />
+                    <input type="hidden" name="examId" th:value="${exam.id}" />
+                    <button type="submit" class="btn btn-success btn-sm">💾</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Message si fermé -->
+    <div th:if="${exam.examStatus.name() == 'CLOSED'}">
+        <div class="alert alert-success mt-3">
+            <strong>Les résultats de l'examen sont validés et l'examen est maintenant fermé.</strong>
+        </div>
+    </div>
+
+    <!-- Bouton retour -->
+    <a th:href="@{/teacher/manage-exam/{courseId}/{examId}(courseId=${exam.course.id}, examId=${exam.id})}"
+       class="btn btn-danger">Retour à la gestion de l'examen</a>
+</div>
 </body>
 </html>
