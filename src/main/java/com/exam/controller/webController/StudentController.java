@@ -52,15 +52,29 @@ public class StudentController {
         // Récupérer les examens pour chaque cours
         Map<Long, List<Exam>> courseExams = new HashMap<>();
         for (Course course : enrolledCourses) {
-            List<Exam> exams = examService.findExamsByCourseId(course.getId());
-            courseExams.put(course.getId(), exams);
+            List<Exam> exams = examService.getExamsByCourseId(course.getId());
+            
+            List<Exam> publishedExams = exams.stream()
+                    .filter(exam -> exam.getExamStatus() == ExamStatus.PUBLISHED)  // Filtrer les examens PUBLISHED
+                    .collect(Collectors.toList());
+
+            courseExams.put(course.getId(), publishedExams);
+        }
+        
+        List<Course> allCourses = courseService.getAllCourses();
+        List<Course> availableCourses = new ArrayList<Course>();
+        for (Course course : allCourses) {
+        	if (enrolledCourses.contains(course)) {
+        		continue;
+        	}
+        	availableCourses.add(course);
         }
 
         // Ajouter à la vue
         model.addAttribute("student", student);
         model.addAttribute("enrolledCourses", enrolledCourses);
         model.addAttribute("courseExams", courseExams);
-        model.addAttribute("allCourses", courseService.getAllCourses()); // Pour afficher la liste de tous les cours disponibles
+        model.addAttribute("availableCourses", availableCourses); 
 
         return "student_dashboard";  // Nom de la vue Thymeleaf
     }
