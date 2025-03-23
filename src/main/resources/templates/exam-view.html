@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Voir l'Examen</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 70%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background-color: #4CAF50;
+        }
+        .navbar a {
+            color: white;
+        }
+        .question-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .question-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .question-title {
+            font-weight: bold;
+        }
+        .question-details {
+            margin-left: 20px;
+        }
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .question-actions .btn {
+            margin-left: 10px;
+        }
+        .question-actions form {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Tableau de bord Étudiant</a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/student/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white" href="/logout">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <h1>Examen : <span th:text="${exam.examTitle}"></span></h1>
+
+        <!-- Affichage des informations de l'examen -->
+        <div class="form-group">
+            <label for="examTitle">Titre de l'examen</label>
+            <input type="text" id="examTitle" name="examTitle" class="form-control" 
+                   th:value="${exam.examTitle}" disabled />
+        </div>
+
+        <div class="form-group">
+            <label for="examDate">Date de l'examen</label>
+            <input type="date" id="examDate" name="examDate" class="form-control"
+                   th:value="${exam.examDate}" disabled />
+        </div>
+
+        <!-- Liste des questions de l'examen -->
+        <h4>Questions :</h4>
+        <ul class="question-list">
+            <li th:each="question, iterStat : ${exam.questions}">
+                <div>
+                    <span class="question-title" th:text="'Question ' + ${iterStat.index + 1} + ' : ' + ${question.questionTitle}"></span>
+                    <div class="question-details">
+                        <p><strong>Catégorie :</strong> <span th:text="${question.category}"></span></p>
+                        <p><strong>Niveau de difficulté :</strong> <span th:text="${question.difficultyLevel}"></span></p>
+                        <p><strong>Réponses :</strong></p>
+                        <ul>
+                            <li><span th:text="'Option 1 : ' + ${question.option1}"></span></li>
+                            <li><span th:text="'Option 2 : ' + ${question.option2}"></span></li>
+                            <li><span th:text="'Option 3 : ' + ${question.option3}"></span></li>
+                            <li><span th:text="'Option 4 : ' + ${question.option4}"></span></li>
+                        </ul>
+                        <p><strong>Réponse correcte :</strong> <span th:text="'Option ' + ${question.rightAnswer}"></span></p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <br>
+
+        <!-- Lien pour voir les résultats de l'examen -->
+        <div th:if="${exam.examStatus == 'PUBLISHED'}">
+            <a th:href="@{/student/exam/results/{id}(id=${exam.id})}" class="btn btn-info">Voir mes résultats</a>
+        </div>
+
+        <br><br>
+
+        <!-- Bouton pour revenir à la page précédente -->
+        <a th:href="@{/student/dashboard}" class="btn btn-danger">🔙 Retour au tableau de bord</a>
+    </div>
+</body>
+</html>
