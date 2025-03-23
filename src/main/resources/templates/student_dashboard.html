@@ -41,6 +41,10 @@
             text-align: center;
             margin-bottom: 10px;
         }
+        .exam-card .exam-title {
+            font-weight: bold;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +65,39 @@
 
     <div class="container">
         <h1>Bienvenue, <span th:text="${student.firstName}">Étudiant</span> !</h1>
+
+        <!-- Liste des cours inscrits -->
+        <h2 class="mt-4">📚 Mes Cours</h2>
+
+        <!-- Boucle pour chaque cours -->
+        <div class="row">
+            <div th:each="course : ${enrolledCourses}" class="col-md-4 mb-4">
+                <div class="course-card">
+                    <h3 th:text="${course.title}" class="text-primary">Nom du cours</h3>
+
+                    <!-- Section pour les examens à passer -->
+                    <h5>📅 Examens à passer</h5>
+                    <div th:each="exam : ${courseExams[course.id]}" th:if="${exam.examDate != null and exam.examDate > T(java.time.LocalDate).now()}">
+                        <div class="exam-card">
+                            <p class="exam-title" th:text="${exam.examTitle}">Titre de l'examen</p>
+                            <p><strong>Professeur :</strong> <span th:text="${exam.course.teacher.lastName} + ' ' + ${exam.course.teacher.firstName}">Nom et Prénom du professeur</span></p>
+                            <p><strong>Date :</strong> <span th:text="${exam.examDate}">Date de l'examen</span></p>
+                            <a th:href="@{/student/exam/{id}(id=${exam.id})}" class="btn btn-sm btn-primary">Voir l'examen</a>
+                        </div>
+                    </div>
+
+                    <!-- Section pour les examens passés -->
+                    <h5>✅ Examens Passés</h5>
+                    <div th:each="exam : ${courseExams[course.id]}" th:if="${exam.examDate != null and exam.examDate <= T(java.time.LocalDate).now()}">
+                        <div class="exam-card">
+                            <p class="exam-title" th:text="${exam.examTitle}">Titre de l'examen</p>
+                            <p><strong>Professeur :</strong> <span th:text="${exam.course.teacher.lastName} + ' ' + ${exam.course.teacher.firstName}">Nom et Prénom du professeur</span></p>
+                            <a th:href="@{/student/exam/results/{id}(id=${exam.id})}" class="btn btn-sm btn-success">Voir les résultats</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Section d'inscription à un nouveau cours -->
         <div class="card mb-4">
@@ -84,27 +121,7 @@
             </div>
         </div>
 
-        <!-- Liste des cours inscrits -->
-        <h2 class="mt-4">📚 Mes Cours</h2>
-        <div th:each="course : ${enrolledCourses}" class="course-card">
-            <h3 th:text="${course.title}" class="text-primary">Nom du cours</h3>
-
-            <div class="row">
-                <div class="col-md-4" th:each="exam : ${courseExams[course.id]}">
-                    <div class="exam-card">
-                        <h5 th:text="${exam.examTitle}">Titre de l'examen</h5>
-						<p><strong>Professeur :</strong> <span th:text="${exam.teacher.lastName} + ' ' + ${exam.teacher.firstName}">Nom et Prénom du professeur</span></p>
-                        <a th:href="@{/student/exam/view/{id}(id=${exam.id})}" class="btn btn-sm btn-primary">Voir l'examen</a>
-                    </div>
-                </div>
-
-                <!-- Message si aucun examen n'est disponible -->
-                <div class="col-12" th:if="${courseExams[course.id] == null or #lists.isEmpty(courseExams[course.id])}">
-                    <p class="text-muted">Aucun examen disponible pour ce cours.</p>
-                </div>
-            </div>
-        </div>
-
     </div>
 
 </body>
+</html>
