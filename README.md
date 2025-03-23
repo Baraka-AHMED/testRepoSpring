@@ -68,19 +68,19 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
 
 ---
 
-🗂 Structure du projet
-pgsql
-Copier
-Modifier
+## 🗂 Structure du projet
+
+```bash
 src/
-├── controller/     → Contrôleurs REST et MVC
-├── model/          → Entités JPA (User, Course, Exam, Question, Quiz)
-├── repository/     → Repositories JPA
-├── service/        → Logique métier
-├── dto/            → Objets de transfert (Login, Register)
-├── config/         → Sécurité (Spring Security)
-├── view/           → Contrôleur racine (ViewController)
-└── Main.java       → Point d’entrée de l’application
+├── config/         # Configuration de sécurité (Spring Security)
+├── controller/     # Contrôleurs REST (API) et MVC (pages Thymeleaf)
+├── dto/            # Objets de transfert (LoginDto, UserRegistrationDto)
+├── model/          # Entités JPA (User, Course, Exam, Question, Quiz)
+├── repository/     # Interfaces de persistance Spring Data JPA
+├── service/        # Logique métier : services pour les entités
+├── view/           # Contrôleur principal (ViewController pour redirections par rôle)
+└── Main.java       # Point d’entrée de l’application Spring Boot
+```
 
 Guide d'utilisation de l'application
 📂 Fichiers de la base de données
