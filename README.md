@@ -52,19 +52,58 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
 
 ## 🌐 API REST Principales
 
-### 🔍 Examens
-- `GET /exams/all` – Liste tous les examens
-- `POST /exams/add` – Ajouter un examen
-- `GET /exams/find?id={id}` – Trouver un examen
-- `DELETE /exams/deleteById?id={id}` – Supprimer un examen
+## 🌐 API REST Principales
 
-### 👨‍🏫 Utilisateurs
-- `GET /users/all` – Tous les utilisateurs
-- `GET /users/role?role=TEACHER` – Utilisateurs par rôle
-- `POST /users/add` – Ajouter un utilisateur
+## 🔑 Connexion à l'application  
 
-### ❓ Quiz
-- `GET /quizzes/all` – Liste de tous les quiz
+### Authentification via l'API  
+
+- **URL** : `http://localhost:9001/api/login`  
+- **Méthode** : `POST`  
+- **Corps de la requête** :  
+
+```json
+{
+  "usernameOrEmail": "root",
+  "password": "root"
+}
+
+### Gestion des utilisateurs via API
+#### Créer un nouvel utilisateur
+
+    URL : http://localhost:9001/api/register
+
+    Méthode : POST
+
+    Corps de la requête :
+
+{
+  "username": "benjamin_student",
+  "email": "benjamin.student@example.com",
+  "firstName": "Benjamin",
+  "lastName": "White",
+  "password": "1234",
+  "role": "STUDENT"
+}
+
+
+## 📚 Gestion des cours via API
+### Créer un cours et l'associer à un enseignant
+
+    URL : http://localhost:9001/api/courses/create
+
+    Méthode : POST
+
+    Corps de la requête :
+
+{
+  "title": "Mathematics 101",
+  "teacher": {
+    "id": 1568
+  }
+}
+
+Remplacez 1568 par l'ID d'un enseignant existant.
 
 ---
 
