@@ -52,8 +52,6 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
 
 ## 🌐 API REST Principales
 
-## 🌐 API REST Principales
-
 ## 🔑 Connexion à l'application  
 
 ### Authentification via l'API  
@@ -67,6 +65,7 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
   "usernameOrEmail": "root",
   "password": "root"
 }
+```
 
 ### Gestion des utilisateurs via API
 #### Créer un nouvel utilisateur
@@ -76,7 +75,7 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
     Méthode : POST
 
     Corps de la requête :
-
+```json
 {
   "username": "benjamin_student",
   "email": "benjamin.student@example.com",
@@ -85,6 +84,7 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
   "password": "1234",
   "role": "STUDENT"
 }
+```
 
 
 ## 📚 Gestion des cours via API
@@ -95,13 +95,14 @@ Ce projet a pour but de faciliter la gestion des examens au sein de la Faculté 
     Méthode : POST
 
     Corps de la requête :
-
+```json
 {
   "title": "Mathematics 101",
   "teacher": {
     "id": 1568
   }
 }
+```
 
 Remplacez 1568 par l'ID d'un enseignant existant.
 
